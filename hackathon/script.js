@@ -53,18 +53,49 @@
         toggle.setAttribute('aria-expanded', 'false');
       });
     }
+  }
 
-    // Smooth scroll for in-page anchors (enhanced version
-    document.querySelectorAll('a[href^="#"]').forEach(function (link) {
-      link.addEventListener('click', function (e) {
-        var href = link.getAttribute('href');
-        if (!href || href === '#') return;
-        var target = document.querySelector(href);
-        if (!target) return;
+  /* ---------- Smooth Scroll for Footer & Navigation Links ---------- */
+  function initSmoothScroll() {
+    document.addEventListener('click', function (e) {
+      var link = e.target.closest('a');
+      if (!link) return;
+
+      var href = link.getAttribute('href');
+      if (!href) return;
+
+      if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+        return;
+      }
+
+      var currentPath = window.location.pathname.split('/').pop() || 'index.html';
+      var targetId = href;
+
+      if (targetId.startsWith(currentPath + '#')) {
+        targetId = targetId.replace(currentPath, '');
+      }
+
+      if (targetId === '#' || targetId === '#top') {
         e.preventDefault();
-        var top = target.getBoundingClientRect().top + window.scrollY - 64;
-        window.scrollTo({ top: top, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
-      });
+        window.scrollTo({
+          top: 0,
+          behavior: prefersReducedMotion ? 'auto' : 'smooth'
+        });
+        return;
+      }
+
+      if (targetId.startsWith('#') && targetId.length > 1) {
+        var targetEl = document.querySelector(targetId);
+        if (targetEl) {
+          e.preventDefault();
+          var offset = 72;
+          var targetTop = Math.max(0, targetEl.getBoundingClientRect().top + window.scrollY - offset);
+          window.scrollTo({
+            top: targetTop,
+            behavior: prefersReducedMotion ? 'auto' : 'smooth'
+          });
+        }
+      }
     });
   }
 
@@ -234,15 +265,74 @@
     var actOl = document.getElementById('diagActions');
     if (actOl) actOl.innerHTML = buildActionsHtml(data.recommendedActions || []);
 
-    // Weather (server populates defaults)
+    // Weather & Best Time to Act
     var w = data.weather || {};
-    if (w.bestTime) document.getElementById('diagWeatherTime').textContent = w.bestTime;
-    if (w.note) document.getElementById('diagWeatherSub').textContent = w.note;
-    if (w.rain) document.getElementById('diagWeatherRain').textContent = w.rain;
-    if (w.humidity) document.getElementById('diagWeatherHum').textContent = w.humidity;
-    if (w.temp) document.getElementById('diagWeatherTemp').textContent = w.temp;
+    var statusBadge = document.getElementById('diagWeatherStatusBadge');
+    var badgeText = document.getElementById('diagWeatherStatusText');
+    var locTag = document.getElementById('diagWeatherLoc');
+    var timeEl = document.getElementById('diagWeatherTime');
+    var subEl = document.getElementById('diagWeatherSub');
+    var whyEl = document.getElementById('diagWeatherWhy');
+    var tempEl = document.getElementById('diagWeatherTemp');
+    var humEl = document.getElementById('diagWeatherHum');
+    var rainEl = document.getElementById('diagWeatherRain');
+    var windEl = document.getElementById('diagWeatherWind');
+    var noticeBox = document.getElementById('weatherNoticeBox');
+    var noticeMsg = document.getElementById('weatherNoticeText');
 
-    // Error section in case in case not needed)
+    // WeatherSummary component elements
+    var wsLoc = document.getElementById('wsLocation');
+    var wsTemp = document.getElementById('wsTemp');
+    var wsHum = document.getElementById('wsHum');
+    var wsRain = document.getElementById('wsRain');
+    var wsWind = document.getElementById('wsWind');
+
+    if (w.error || (w.bestTimeStatus === undefined && !w.bestTime)) {
+      if (noticeBox) noticeBox.hidden = false;
+      if (noticeMsg) noticeMsg.textContent = w.error || 'Weather information is temporarily unavailable.';
+    } else {
+      if (noticeBox) noticeBox.hidden = true;
+
+      var locStr = w.location || (userLocation && userLocation.displayName) || 'Machilipatnam, AP';
+      if (locTag) locTag.textContent = locStr;
+      if (wsLoc) wsLoc.textContent = locStr;
+
+      if (timeEl) timeEl.textContent = w.bestTime || 'Tomorrow morning';
+      if (subEl) subEl.textContent = w.bestTimeNote || 'Low chance of rain · Moderate humidity';
+      if (whyEl) whyEl.textContent = w.bestTimeWhy || 'Weather conditions look suitable for the recommended crop-care action.';
+
+      var tStr = (w.temperature !== undefined ? w.temperature + '°C' : '25°C');
+      var hStr = (w.humidity !== undefined ? w.humidity + '%' : '65%');
+      var rStr = (w.rainChance !== undefined ? w.rainChance + '%' : '15%');
+      var wStr = (w.windSpeed !== undefined ? w.windSpeed + ' km/h' : '10 km/h');
+
+      if (tempEl) tempEl.textContent = tStr;
+      if (humEl) humEl.textContent = hStr;
+      if (rainEl) rainEl.textContent = rStr;
+      if (windEl) windEl.textContent = wStr;
+
+      if (wsTemp) wsTemp.textContent = tStr;
+      if (wsHum) wsHum.textContent = hStr;
+      if (wsRain) wsRain.textContent = rStr;
+      if (wsWind) wsWind.textContent = wStr;
+
+      if (statusBadge && badgeText) {
+        var status = w.bestTimeStatus || 'Favorable';
+        badgeText.textContent = w.bestTimeHeadline || 'Good conditions to act';
+
+        if (status === 'Favorable') {
+          statusBadge.className = 'status-badge badge-favorable';
+        } else if (status === 'Rain risk') {
+          statusBadge.className = 'status-badge badge-rain';
+        } else if (status === 'High wind') {
+          statusBadge.className = 'status-badge badge-wind';
+        } else {
+          statusBadge.className = 'status-badge badge-uncertain';
+        }
+      }
+    }
+
+    // Error section in case not needed
     var errEl = document.getElementById('errorState');
     if (errEl) errEl.hidden = true;
   }
@@ -263,8 +353,151 @@
     if (errEl) errEl.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'center' });
   }
 
+  /* ---------- Location & Weather Management ---------- */
+  var userLocation = {
+    type: null,
+    lat: null,
+    lon: null,
+    city: '',
+    state: '',
+    country: '',
+    displayName: ''
+  };
+
+  function initLocationControls() {
+    var locStatusText = document.getElementById('locStatusText');
+    var locDetectBtn = document.getElementById('locDetectBtn');
+    var locManualBtn = document.getElementById('locManualBtn');
+    var locManualBox = document.getElementById('locManualBox');
+    var cityInput = document.getElementById('cityInput');
+    var stateInput = document.getElementById('stateInput');
+    var countryInput = document.getElementById('countryInput');
+    var saveManualLocBtn = document.getElementById('saveManualLocBtn');
+    var closeManualLocBtn = document.getElementById('closeManualLocBtn');
+
+    if (!locStatusText) return;
+
+    function setStatus(text, isError) {
+      locStatusText.textContent = text;
+      if (isError) {
+        locStatusText.style.color = '#B23A3A';
+      } else {
+        locStatusText.style.color = '';
+      }
+    }
+
+    function requestBrowserLocation() {
+      if (!('geolocation' in navigator)) {
+        setStatus('Location unavailable (browser geolocation unsupported)', true);
+        if (locManualBox) locManualBox.hidden = false;
+        return;
+      }
+
+      setStatus('Getting your location...');
+      navigator.geolocation.getCurrentPosition(
+        function (pos) {
+          userLocation.type = 'geo';
+          userLocation.lat = pos.coords.latitude;
+          userLocation.lon = pos.coords.longitude;
+          userLocation.city = '';
+          userLocation.state = '';
+          userLocation.country = '';
+
+          var url = '/api/weather?lat=' + userLocation.lat + '&lon=' + userLocation.lon;
+          fetch(url)
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+              if (d && d.location) {
+                userLocation.displayName = d.location;
+                setStatus('📍 ' + d.location);
+              } else {
+                userLocation.displayName = userLocation.lat.toFixed(2) + '°, ' + userLocation.lon.toFixed(2) + '°';
+                setStatus('📍 Location set (' + userLocation.displayName + ')');
+              }
+              if (locManualBox) locManualBox.hidden = true;
+            })
+            .catch(function () {
+              userLocation.displayName = userLocation.lat.toFixed(2) + '°, ' + userLocation.lon.toFixed(2) + '°';
+              setStatus('📍 Location set (' + userLocation.displayName + ')');
+              if (locManualBox) locManualBox.hidden = true;
+            });
+        },
+        function (err) {
+          setStatus("We couldn't access your location.", true);
+          if (locManualBox) locManualBox.hidden = false;
+        },
+        { timeout: 10000, enableHighAccuracy: false }
+      );
+    }
+
+    if (locDetectBtn) {
+      locDetectBtn.addEventListener('click', function () {
+        requestBrowserLocation();
+      });
+    }
+
+    if (locManualBtn) {
+      locManualBtn.addEventListener('click', function () {
+        if (locManualBox) {
+          locManualBox.hidden = !locManualBox.hidden;
+        }
+      });
+    }
+
+    if (closeManualLocBtn) {
+      closeManualLocBtn.addEventListener('click', function () {
+        if (locManualBox) locManualBox.hidden = true;
+      });
+    }
+
+    if (saveManualLocBtn) {
+      saveManualLocBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var c = (cityInput ? cityInput.value : '').trim();
+        var s = (stateInput ? stateInput.value : '').trim();
+        var cntry = (countryInput ? countryInput.value : '').trim();
+
+        if (!c && !s && !cntry) {
+          alert('Please enter at least a City or State name.');
+          return;
+        }
+
+        setStatus('Checking local weather...');
+        var query = '/api/weather?city=' + encodeURIComponent(c) + '&state=' + encodeURIComponent(s) + '&country=' + encodeURIComponent(cntry);
+        fetch(query)
+          .then(function (r) {
+            return r.json().then(function (data) {
+              if (!r.ok) {
+                var errDetail = (data && data.error) ? data.error : "We couldn't find weather information for this location.";
+                setStatus(errDetail, true);
+                return;
+              }
+              userLocation.type = 'manual';
+              userLocation.lat = null;
+              userLocation.lon = null;
+              userLocation.city = c;
+              userLocation.state = s;
+              userLocation.country = cntry;
+              userLocation.displayName = data.location || [c, s, cntry].filter(Boolean).join(', ');
+
+              setStatus('📍 ' + userLocation.displayName);
+              if (locManualBox) locManualBox.hidden = true;
+            });
+          })
+          .catch(function () {
+            setStatus("We couldn't find weather information for this location.", true);
+          });
+      });
+    }
+
+    // Auto-prompt browser geolocation on load
+    requestBrowserLocation();
+  }
+
   /* ---------- Analysis workspace state machine (real API) ---------- */
   function initAnalysis() {
+    initLocationControls();
+
     var uploadState = document.getElementById('uploadState');
     var previewState = document.getElementById('previewState');
     var loadingState = document.getElementById('loadingState');
@@ -471,6 +704,17 @@
         var fd = new FormData();
         fd.append('image', currentFile, currentFile.name || 'crop.jpg');
 
+        if (userLocation.lat !== null && userLocation.lon !== null) {
+          fd.append('lat', String(userLocation.lat));
+          fd.append('lon', String(userLocation.lon));
+        } else if (userLocation.city || userLocation.state || userLocation.country) {
+          if (userLocation.city) fd.append('city', userLocation.city);
+          if (userLocation.state) fd.append('state', userLocation.state);
+          if (userLocation.country) fd.append('country', userLocation.country);
+        } else if (userLocation.displayName) {
+          fd.append('location', userLocation.displayName);
+        }
+
         var endpoint = '/api/analyze-crop';
         var opts = {
           method: 'POST',
@@ -535,6 +779,7 @@
   /* ---------- Boot ---------- */
   function boot() {
     initNavbar();
+    initSmoothScroll();
     initReveals();
     initAnalysis();
   }

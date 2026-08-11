@@ -7,33 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to content</a>
 
-  <nav class="navbar scrolled" id="navbar" role="navigation" aria-label="Main navigation">
-    <div class="container nav-inner">
-      <a href="index.html" class="brand" aria-label="CropGuide home">
-        <svg class="brand-icon" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-          <path d="M6 26c6-1 10-5 11-11 1 6 5 10 11 11-1 6-5 10-11 11-6-1-10-5-11-11Z" fill="#2E7D32"/>
-          <path d="M16 26c0-6 3-10 8-12-1-6-4-10-8-11-4 1-7 5-8 11 5 2 8 6 8 12Z" fill="#A5D6A7"/>
-        </svg>
-        <span class="brand-name">CropGuide</span>
-      </a>
-
-      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu" aria-label="Toggle navigation">
-        <span></span><span></span><span></span>
-      </button>
-
-      <ul class="nav-links" id="navMenu" role="list">
-        <li><a href="index.html#features">Features</a></li>
-        <li><a href="index.html#how">How It Works</a></li>
-        <li><a href="index.html#about">About</a></li>
-        <li><a href="index.html#contact">Contact</a></li>
-      </ul>
-    </div>
-  </nav>
+  <!-- Animated Framer Navigation -->
+  <div id="animated-nav-root"></div>
 
   <main id="main" class="workspace">
     <div class="container workspace-inner">
@@ -47,6 +28,52 @@
         <h1>Analyze your crop</h1>
         <p>Upload a clear photo of the affected leaf or crop.</p>
       </header>
+
+      <!-- LOCATION BAR -->
+      <div class="location-bar reveal reveal-delay-1" id="locationBar">
+        <div class="loc-bar-inner">
+          <div class="loc-info-group">
+            <span class="loc-pin-icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 18s-6-4.5-6-9a6 6 0 1 1 12 0c0 4.5-6 9-6 9Z" stroke="#2E7D32" stroke-width="1.6" stroke-linejoin="round"/><circle cx="10" cy="9" r="2" stroke="#2E7D32" stroke-width="1.6"/></svg>
+            </span>
+            <div>
+              <p class="loc-kicker">Farm location</p>
+              <p class="loc-status-text" id="locStatusText">Location: Detecting automatically…</p>
+            </div>
+          </div>
+          <div class="loc-btn-group">
+            <button type="button" class="btn-loc-action" id="locDetectBtn" title="Detect browser location">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M10 1v3M10 16v3M1 10h3M16 10h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <span>Use browser location</span>
+            </button>
+            <button type="button" class="btn-loc-action btn-loc-ghost" id="locManualBtn">
+              Enter manually
+            </button>
+          </div>
+        </div>
+
+        <!-- MANUAL LOCATION FORM -->
+        <div class="loc-manual-box" id="locManualBox" hidden>
+          <div class="loc-manual-fields">
+            <div class="field-item">
+              <label for="cityInput">City</label>
+              <input type="text" id="cityInput" placeholder="e.g. Machilipatnam" />
+            </div>
+            <div class="field-item">
+              <label for="stateInput">State</label>
+              <input type="text" id="stateInput" placeholder="e.g. AP" />
+            </div>
+            <div class="field-item">
+              <label for="countryInput">Country</label>
+              <input type="text" id="countryInput" placeholder="e.g. India" />
+            </div>
+          </div>
+          <div class="loc-manual-btns">
+            <button type="button" class="btn btn-primary btn-sm" id="saveManualLocBtn">Update location</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="closeManualLocBtn">Cancel</button>
+          </div>
+        </div>
+      </div>
 
       <!-- STATES: idle / preview / loading / result -->
       <section class="workspace-panel reveal reveal-delay-1" aria-live="polite">
@@ -126,19 +153,19 @@
           <div class="loading-steps" role="list">
             <div class="step step-active" data-step="0">
               <span class="step-dot"></span>
-              <p>Reading image</p>
+              <p>Reading image & leaf patterns</p>
             </div>
             <div class="step" data-step="1">
               <span class="step-dot"></span>
-              <p>Inspecting leaf patterns</p>
+              <p>Getting your location...</p>
             </div>
             <div class="step" data-step="2">
               <span class="step-dot"></span>
-              <p>Cross-checking conditions</p>
+              <p>Checking local weather...</p>
             </div>
             <div class="step" data-step="3">
               <span class="step-dot"></span>
-              <p>Preparing recommendations</p>
+              <p>Finding the best time to act...</p>
             </div>
           </div>
         </div>
@@ -185,6 +212,52 @@
             </div>
           </section>
 
+          <!-- WeatherSummary Component (Compact Horizontal Card below Diagnosis) -->
+          <section class="panel weather-summary-card" id="weatherSummary">
+            <div class="ws-head">
+              <div class="ws-title-group">
+                <svg class="ws-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="#2E7D32" stroke-width="2" stroke-linecap="round"/>
+                  <circle cx="12" cy="12" r="5" stroke="#2E7D32" stroke-width="2"/>
+                </svg>
+                <div>
+                  <h4 class="ws-heading">Current Weather Conditions</h4>
+                  <p class="ws-location" id="wsLocation">Machilipatnam, AP</p>
+                </div>
+              </div>
+            </div>
+            <div class="ws-grid">
+              <div class="ws-item">
+                <div class="ws-item-header">
+                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2v10M10 12a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" stroke="#2E7D32" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  <span>Temperature</span>
+                </div>
+                <p class="ws-val" id="wsTemp">29°C</p>
+              </div>
+              <div class="ws-item">
+                <div class="ws-item-header">
+                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3s-5 6-5 9a5 5 0 1 0 10 0c0-3-5-9-5-9Z" stroke="#2E7D32" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                  <span>Humidity</span>
+                </div>
+                <p class="ws-val" id="wsHum">72%</p>
+              </div>
+              <div class="ws-item">
+                <div class="ws-item-header">
+                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2a6 6 0 0 0-6 6c0 3.3 2.7 6 6 6s6-2.7 6-6a6 6 0 0 0-6-6Z" stroke="#2E7D32" stroke-width="1.6"/><path d="M7 16l-1 3M11 16l-1 3M15 16l-1 3" stroke="#2E7D32" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  <span>Rain Chance</span>
+                </div>
+                <p class="ws-val" id="wsRain">15%</p>
+              </div>
+              <div class="ws-item">
+                <div class="ws-item-header">
+                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 7h11a2 2 0 1 0-2-2M3 11h14a2 2 0 1 1-2 2M3 15h8a2 2 0 1 0-2-2" stroke="#2E7D32" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  <span>Wind Speed</span>
+                </div>
+                <p class="ws-val" id="wsWind">10 km/h</p>
+              </div>
+            </div>
+          </section>
+
           <!-- What we found -->
           <section class="panel">
             <div class="panel-head">
@@ -223,37 +296,67 @@
             </ol>
           </section>
 
-          <!-- Weather timing -->
-          <section class="panel timing-panel">
-            <div class="timing-icon" aria-hidden="true">
-              <svg viewBox="0 0 48 48" fill="none">
-                <path d="M14 40a10 10 0 0 1-3-13 11 11 0 0 1 19-3 9 9 0 0 1 2 17H14Z" stroke="#2E7D32" stroke-width="1.8" stroke-linejoin="round"/>
-                <circle cx="34" cy="15" r="4" stroke="#C98A3A" stroke-width="1.8"/>
-                <path d="M34 7v2M34 21v2M27 15h-2M43 15h-2M29 10l-1.5-1.5M40.5 21.5 39 20M29 20l-1.5 1.5M40.5 8.5 39 10" stroke="#C98A3A" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
+          <!-- Weather timing section -->
+          <section class="panel timing-panel" id="weatherPanel">
+            <div class="timing-header-row">
+              <div class="timing-badge-wrap">
+                <span class="status-badge badge-favorable" id="diagWeatherStatusBadge">
+                  <span class="badge-dot" id="diagWeatherBadgeDot"></span>
+                  <span id="diagWeatherStatusText">Good conditions to act</span>
+                </span>
+              </div>
+              <div class="timing-loc-tag" id="diagWeatherLocTag">
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 14.5s-4.5-3.5-4.5-7a4.5 4.5 0 1 1 9 0c0 3.5-4.5 7-4.5 7Z" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="7.5" r="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
+                <span id="diagWeatherLoc">Machilipatnam, AP</span>
+              </div>
             </div>
-            <div class="timing-main">
-              <p class="timing-kicker">Best time to act</p>
-              <h4 id="diagWeatherTime">Tomorrow morning</h4>
-              <p class="timing-sub" id="diagWeatherSub">Low chance of rain · Moderate humidity · Gentle breeze expected</p>
-              <p class="timing-why" id="diagWeatherWhy">
-                Early morning application minimizes sun stress and gives treatments time to absorb before midday heat.
-              </p>
+
+            <div class="timing-grid">
+              <div class="timing-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none">
+                  <path d="M14 40a10 10 0 0 1-3-13 11 11 0 0 1 19-3 9 9 0 0 1 2 17H14Z" stroke="#2E7D32" stroke-width="1.8" stroke-linejoin="round"/>
+                  <circle cx="34" cy="15" r="4" stroke="#C98A3A" stroke-width="1.8"/>
+                  <path d="M34 7v2M34 21v2M27 15h-2M43 15h-2M29 10l-1.5-1.5M40.5 21.5 39 20M29 20l-1.5 1.5M40.5 8.5 39 10" stroke="#C98A3A" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="timing-main">
+                <p class="timing-kicker">Best time to act</p>
+                <h4 id="diagWeatherTime">Tomorrow morning</h4>
+                <p class="timing-sub" id="diagWeatherSub">Low chance of rain · Moderate humidity</p>
+                <p class="timing-why" id="diagWeatherWhy">
+                  Weather conditions look suitable for the recommended crop-care action.
+                </p>
+              </div>
             </div>
-            <dl class="timing-stats">
-              <div>
-                <dt>Rain</dt>
-                <dd id="diagWeatherRain">10%</dd>
-              </div>
-              <div>
-                <dt>Humidity</dt>
-                <dd id="diagWeatherHum">62%</dd>
-              </div>
-              <div>
-                <dt>Temp</dt>
-                <dd id="diagWeatherTemp">21°C</dd>
-              </div>
-            </dl>
+
+            <!-- Current conditions stats -->
+            <div class="timing-stats-container">
+              <p class="stats-heading">Current conditions</p>
+              <dl class="timing-stats">
+                <div>
+                  <dt>Temp</dt>
+                  <dd id="diagWeatherTemp">29°C</dd>
+                </div>
+                <div>
+                  <dt>Humidity</dt>
+                  <dd id="diagWeatherHum">72%</dd>
+                </div>
+                <div>
+                  <dt>Rain Chance</dt>
+                  <dd id="diagWeatherRain">15%</dd>
+                </div>
+                <div>
+                  <dt>Wind Speed</dt>
+                  <dd id="diagWeatherWind">10 km/h</dd>
+                </div>
+              </dl>
+            </div>
+
+            <!-- Weather error notice banner (if weather API fails) -->
+            <div class="weather-notice-box" id="weatherNoticeBox" hidden>
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="8" stroke="#8A5A54" stroke-width="1.5"/><path d="M10 6v5M10 14v.5" stroke="#8A5A54" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <span id="weatherNoticeText">Weather information is temporarily unavailable.</span>
+            </div>
           </section>
 
           <!-- Error state (kept hidden until a safe API error occurs) -->
@@ -307,6 +410,7 @@
     </div>
   </footer>
 
+  <script src="nav-bundle.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

@@ -7,47 +7,31 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to content</a>
 
-  <nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
-    <div class="container nav-inner">
-      <a href="#top" class="brand" aria-label="CropGuide home">
-        <svg class="brand-icon" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-          <path d="M6 26c6-1 10-5 11-11 1 6 5 10 11 11-1 6-5 10-11 11-6-1-10-5-11-11Z" fill="#2E7D32"/>
-          <path d="M16 26c0-6 3-10 8-12-1-6-4-10-8-11-4 1-7 5-8 11 5 2 8 6 8 12Z" fill="#A5D6A7"/>
-        </svg>
-        <span class="brand-name">CropGuide</span>
-      </a>
-
-      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu" aria-label="Toggle navigation">
-        <span></span><span></span><span></span>
-      </button>
-
-      <ul class="nav-links" id="navMenu" role="list">
-        <li><a href="#features">Features</a></li>
-        <li><a href="#how">How It Works</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </div>
-  </nav>
+  <!-- Animated Framer Navigation -->
+  <div id="animated-nav-root"></div>
 
   <main id="main">
     <!-- HERO -->
     <section id="top" class="hero">
       <div class="container hero-grid">
         <div class="hero-copy reveal">
-          <p class="eyebrow">
-            <span class="eyebrow-dot" aria-hidden="true"></span>
-            AI-powered crop care
-          </p>
-          <h1 class="headline">
-            Instant crop insights.<br/>
-            <span class="headline-accent">Smarter</span> decisions.
-          </h1>
+          <div id="hero-text-headline-root">
+            <p class="eyebrow">
+              <span class="eyebrow-dot" aria-hidden="true"></span>
+              AI-powered crop care
+            </p>
+            <h1 class="headline">
+              Instant crop insights.<br/>
+              <span class="headline-accent">Smarter</span> decisions.
+            </h1>
+          </div>
+
           <p class="lede">
             Identify crop problems, understand what to do next, and choose the right time to act — all in one place.
           </p>
@@ -61,95 +45,76 @@
             <a href="#how" class="link-arrow">See how it works <span aria-hidden="true">→</span></a>
           </div>
 
-          <ul class="feature-strip" role="list" aria-label="Core capabilities">
-            <li>
-              <span class="strip-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none"><path d="M12 3c3 4 5 7 5 11a5 5 0 1 1-10 0c0-4 2-7 5-11Z" stroke="#2E7D32" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 22V10" stroke="#2E7D32" stroke-width="1.7" stroke-linecap="round"/></svg>
-              </span>
-              <div>
-                <p class="strip-title">Detect</p>
-                <p class="strip-sub">Upload a crop image</p>
-              </div>
-            </li>
-            <li>
-              <span class="strip-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2E7D32" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="#2E7D32" stroke-width="1.7" stroke-linecap="round"/></svg>
-              </span>
-              <div>
-                <p class="strip-title">Diagnose</p>
-                <p class="strip-sub">Understand the likely problem</p>
-              </div>
-            </li>
-            <li>
-              <span class="strip-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#2E7D32" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span>
-              <div>
-                <p class="strip-title">Act</p>
-                <p class="strip-sub">Know what to do and when</p>
-              </div>
-            </li>
-          </ul>
+          <div id="hero-workflow-cards-root">
+            <div class="workflow-steps-header">
+              <span class="workflow-eyebrow">3-STEP PROTECTION WORKFLOW</span>
+              <p class="workflow-subtitle">Follow these sequential steps to diagnose & protect your harvest</p>
+            </div>
+
+            <ol class="feature-strip" aria-label="Core workflow steps">
+              <li class="feature-strip-item">
+                <a href="analyze.html" class="square-card-btn detect-card" title="Step 1: Detect crop issues">
+                  <span class="card-badge detect-badge">01 DETECT</span>
+                  <div class="card-icon-wrapper detect-icon-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                  <div class="card-text-block">
+                    <h3 class="card-title">1. Detect</h3>
+                    <p class="card-desc">Upload crop photo</p>
+                  </div>
+                  <div class="card-action-btn detect-action-btn">
+                    <span>Start Scan</span>
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="action-arrow"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+                  </div>
+                </a>
+              </li>
+
+              <li class="feature-strip-item">
+                <a href="#sample-diagnosis" class="square-card-btn diagnosis-card" title="Step 2: View sample AI diagnosis">
+                  <span class="card-badge diagnosis-badge">02 DIAGNOSIS</span>
+                  <div class="card-icon-wrapper diagnosis-icon-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                  </div>
+                  <div class="card-text-block">
+                    <h3 class="card-title">2. Diagnosis</h3>
+                    <p class="card-desc">AI problem analysis</p>
+                  </div>
+                  <div class="card-action-btn diagnosis-action-btn">
+                    <span>View Analysis</span>
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="action-arrow"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+                  </div>
+                </a>
+              </li>
+
+              <li class="feature-strip-item">
+                <a href="#how" class="square-card-btn act-card" title="Step 3: Learn when and how to act">
+                  <span class="card-badge act-badge">03 ACT</span>
+                  <div class="card-icon-wrapper act-icon-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                  </div>
+                  <div class="card-text-block">
+                    <h3 class="card-title">3. Act</h3>
+                    <p class="card-desc">Treatment guide</p>
+                  </div>
+                  <div class="card-action-btn act-action-btn">
+                    <span>Action Plan</span>
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="action-arrow"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+                  </div>
+                </a>
+              </li>
+            </ol>
+          </div>
         </div>
 
-        <div class="hero-visual reveal reveal-delay-1" aria-hidden="true">
-          <div class="hero-img-wrap">
-            <img
-              src="https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Close-up%20photograph%20of%20a%20single%20green%20crop%20leaf%20held%20gently%20between%20two%20fingers%2C%20natural%20soft%20morning%20light%2C%20visible%20veins%2C%20subtle%20brown%20spots%2C%20organic%20and%20realistic%2C%20shallow%20depth%20of%20field%2C%20blurred%20tea%20plantation%20terraces%20background%2C%20professional%20agricultural%20photography&image_size=portrait_4_3"
-              alt="Close-up of a crop leaf showing early disease signs"
-              class="hero-img"
-              loading="eager"
-            />
-          </div>
-
-          <div class="preview-card" role="img" aria-label="Sample AI diagnosis preview">
-            <div class="preview-head">
-              <svg viewBox="0 0 32 32" fill="none" aria-hidden="true" class="preview-leaf-icon">
-                <path d="M6 26c6-1 10-5 11-11 1 6 5 10 11 11-1 6-5 10-11 11-6-1-10-5-11-11Z" fill="#2E7D32"/>
-                <path d="M16 26c0-6 3-10 8-12-1-6-4-10-8-11-4 1-7 5-8 11 5 2 8 6 8 12Z" fill="#A5D6A7"/>
-              </svg>
-              <span class="preview-label">AI Diagnosis</span>
-            </div>
-            <div class="preview-cond">
-              <div class="preview-cond-leaf">
-                <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                  <path d="M6 42c10-2 18-10 20-24 2 14 10 22 20 24-2 10-10 18-20 20-10-2-18-10-20-20Z" fill="#A5D6A7"/>
-                  <path d="M26 24c-2 4-5 7-9 9 2-4 5-7 9-9Z" fill="#8B4513" opacity="0.55"/>
-                  <path d="M32 30c-1 2-3 4-5 5 1-2 3-4 5-5Z" fill="#8B4513" opacity="0.45"/>
-                  <path d="M22 18c-1 2-2 3-3 4 1-1 2-2 3-4Z" fill="#8B4513" opacity="0.4"/>
-                </svg>
-              </div>
-              <div>
-                <p class="preview-name">Leaf Blight</p>
-                <p class="preview-conf">87% Confidence</p>
-              </div>
-            </div>
-            <div class="preview-section">
-              <p class="preview-section-title">Recommended action</p>
-              <ul class="preview-actions">
-                <li>
-                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10l4 4 8-8" stroke="#2E7D32" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  <span>Remove affected leaves</span>
-                </li>
-                <li>
-                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10l4 4 8-8" stroke="#2E7D32" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  <span>Apply copper-based fungicide</span>
-                </li>
-                <li>
-                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10l4 4 8-8" stroke="#2E7D32" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  <span>Spray in the early morning</span>
-                </li>
-              </ul>
-            </div>
-            <div class="preview-timing">
-              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <rect x="3" y="4" width="14" height="13" rx="2" stroke="#2E7D32" stroke-width="1.6"/>
-                <path d="M3 8h14M7 3v3M13 3v3" stroke="#2E7D32" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
-              <div>
-                <p class="preview-timing-label">When to act</p>
-                <p class="preview-timing-value">Tomorrow morning</p>
-              </div>
+        <div class="hero-visual reveal reveal-delay-1">
+          <div id="hero-image-root">
+            <div class="hero-img-wrap">
+              <img
+                src="/src/assets/images/hero_background_1786428785983.jpg"
+                alt="Lush green agricultural crop field at sunrise"
+                class="hero-img"
+                loading="eager"
+              />
             </div>
           </div>
 
@@ -208,6 +173,97 @@
             <h3>Weather-aware timing</h3>
             <p>Get the best window to act — taking rain, humidity, and temperature into account.</p>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAMPLE DIAGNOSIS SHOWCASE SECTION -->
+    <section id="sample-diagnosis" class="section">
+      <div class="container">
+        <div class="showcase-grid">
+          <div class="showcase-info reveal">
+            <p class="kicker">Sample AI Diagnosis</p>
+            <h2 class="section-title">Instant crop analysis with weather-smart timing</h2>
+            <p class="section-sub">
+              Upload a clear leaf photo to receive an immediate diagnosis, confidence breakdown, recommended action steps, and local weather timing.
+            </p>
+            <ul class="showcase-highlights">
+              <li>
+                <span class="sc-badge">1</span>
+                <div>
+                  <strong>Precise Identification</strong>
+                  <p>Spot leaf blight, rust, mildew, or nutrient deficiencies.</p>
+                </div>
+              </li>
+              <li>
+                <span class="sc-badge">2</span>
+                <div>
+                  <strong>Actionable Steps</strong>
+                  <p>Follow tailored treatment steps designed for practical field application.</p>
+                </div>
+              </li>
+              <li>
+                <span class="sc-badge">3</span>
+                <div>
+                  <strong>Best Time to Act</strong>
+                  <p>Evaluates local rain risk, temperature, and wind to pick the ideal intervention window.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="showcase-card-wrap reveal reveal-delay-1">
+            <div class="preview-card showcase-preview-card" role="img" aria-label="Sample AI diagnosis preview">
+              <div class="preview-head">
+                <svg viewBox="0 0 32 32" fill="none" aria-hidden="true" class="preview-leaf-icon">
+                  <path d="M6 26c6-1 10-5 11-11 1 6 5 10 11 11-1 6-5 10-11 11-6-1-10-5-11-11Z" fill="#2E7D32"/>
+                  <path d="M16 26c0-6 3-10 8-12-1-6-4-10-8-11-4 1-7 5-8 11 5 2 8 6 8 12Z" fill="#A5D6A7"/>
+                </svg>
+                <span class="preview-label">AI Diagnosis</span>
+              </div>
+              <div class="preview-cond">
+                <div class="preview-cond-leaf">
+                  <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                    <path d="M6 42c10-2 18-10 20-24 2 14 10 22 20 24-2 10-10 18-20 20-10-2-18-10-20-20Z" fill="#A5D6A7"/>
+                    <path d="M26 24c-2 4-5 7-9 9 2-4 5-7 9-9Z" fill="#8B4513" opacity="0.55"/>
+                    <path d="M32 30c-1 2-3 4-5 5 1-2 3-4 5-5Z" fill="#8B4513" opacity="0.45"/>
+                    <path d="M22 18c-1 2-2 3-3 4 1-1 2-2 3-4Z" fill="#8B4513" opacity="0.4"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="preview-name">Leaf Blight</p>
+                  <p class="preview-conf">87% Confidence</p>
+                </div>
+              </div>
+              <div class="preview-section">
+                <p class="preview-section-title">Recommended action</p>
+                <ul class="preview-actions">
+                  <li>
+                    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10l4 4 8-8" stroke="#2E7D32" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Remove affected leaves</span>
+                  </li>
+                  <li>
+                    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10l4 4 8-8" stroke="#2E7D32" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Apply copper-based fungicide</span>
+                  </li>
+                  <li>
+                    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10l4 4 8-8" stroke="#2E7D32" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Spray in the early morning</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="preview-timing">
+                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <rect x="3" y="4" width="14" height="13" rx="2" stroke="#2E7D32" stroke-width="1.6"/>
+                  <path d="M3 8h14M7 3v3M13 3v3" stroke="#2E7D32" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+                <div>
+                  <p class="preview-timing-label">When to act</p>
+                  <p class="preview-timing-value">Tomorrow morning</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -318,6 +374,7 @@
     </div>
   </footer>
 
+  <script src="nav-bundle.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
